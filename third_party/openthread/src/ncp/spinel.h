@@ -2570,7 +2570,7 @@ typedef enum
     SPINEL_PROP_DATASET_DELAY_TIMER = SPINEL_PROP_THREAD_EXT__BEGIN + 30,
 
     /// Operational Dataset Security Policy
-    /** Format: `SC` - No direct read or write
+    /** Format: `SC(C)` - No direct read or write
      *
      * It can only be included in one of the Dataset related properties below:
      *
@@ -2583,7 +2583,8 @@ typedef enum
      *
      * Content is
      *   `S` : Key Rotation Time (in units of hour)
-     *   `C` : Security Policy Flags (as specified in Thread 1.1 Section 8.10.1.15)
+     *   `C` : Security Policy Flags (as specified in Thread 1.1/1.2 Section 8.10.1.15)
+     *   `C` : (optional) second byte of Security Policy Flags (as specified in Thread 1.2 Section 8.10.1.15)
      *
      */
     SPINEL_PROP_DATASET_SECURITY_POLICY = SPINEL_PROP_THREAD_EXT__BEGIN + 31,
@@ -2888,6 +2889,18 @@ typedef enum
      *
      */
     SPINEL_PROP_THREAD_NDPROXY_TABLE = SPINEL_PROP_THREAD_EXT__BEGIN + 72,
+
+    /// Configure BBR's DUA rsp for next DUA.req from specified device, only for certification purpose.
+    /** Format: [EL]] - Write only
+     *
+     * Data per item is:
+     *
+     *  `E`: Mesh Local IID of the specified device.
+     *  `L`: Status value to respond with
+     *
+     */
+
+    SPINEL_PROP_THREAD_REFERENCE_DEVICE_DUA_RSP = SPINEL_PROP_THREAD_EXT__BEGIN + 73,
 
     SPINEL_PROP_THREAD_EXT__END = 0x1600,
 

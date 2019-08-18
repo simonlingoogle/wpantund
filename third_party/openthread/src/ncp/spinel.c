@@ -1831,6 +1831,10 @@ const char *spinel_prop_key_to_cstr(spinel_prop_key_t prop_key)
         ret = "PROP_THREAD_NDPROXY_TABLE";
         break;
 
+    case SPINEL_PROP_THREAD_REFERENCE_DEVICE_DUA_RSP:
+        ret = "PROP_THREAD_REFERENCE_DEVICE_DUA_RSP";
+        break;
+
     case SPINEL_PROP_MESHCOP_JOINER_STATE:
         ret = "MESHCOP_JOINER_STATE";
         break;
