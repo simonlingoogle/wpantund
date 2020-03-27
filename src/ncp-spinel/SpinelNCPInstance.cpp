@@ -4090,20 +4090,16 @@ SpinelNCPInstance::set_prop_ThreadConfigMlrResponse(const boost::any &value, Cal
 {
 	Data packet = any_to_data(value);
 
-	if (packet.size() >= sizeof(spinel_eui64_t) + sizeof(uint8_t)) {
-		spinel_eui64_t mliid;
+	if (packet.size() >= sizeof(uint8_t)) {
 		uint8_t status;
 
-		memcpy(&mliid, packet.data(), sizeof(spinel_eui64_t));
-		packet.pop_front(sizeof(spinel_eui64_t));
 		status = packet[0];
 
 		start_new_task(SpinelNCPTaskSendCommand::Factory(this)
 				.set_callback(cb)
 				.add_command(SpinelPackData(
-						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_EUI64_S SPINEL_DATATYPE_UINT8_S),
+						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_UINT8_S),
 						SPINEL_PROP_THREAD_REFERENCE_DEVICE_MLR_RSP,
-						&mliid,
 						status
 						))
 				.finish()
