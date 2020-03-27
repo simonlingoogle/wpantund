@@ -3575,6 +3575,9 @@ SpinelNCPInstance::regsiter_all_set_handlers(void)
 		kWPANTUNDProperty_ThreadConfigDuaResponse,
 		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigDuaResponse, this, _1, _2));
 	register_set_handler(
+		kWPANTUNDProperty_ThreadConfigMlrResponse,
+		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigMlrResponse, this, _1, _2));
+	register_set_handler(
 		kWPANTUNDProperty_BbrSequenceNumber,
 		boost::bind(&SpinelNCPInstance::set_prop_BbrSequenceNumber, this, _1, _2));
 	register_set_handler(
@@ -4072,6 +4075,34 @@ SpinelNCPInstance::set_prop_ThreadConfigDuaResponse(const boost::any &value, Cal
 				.add_command(SpinelPackData(
 						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_EUI64_S SPINEL_DATATYPE_UINT8_S),
 						SPINEL_PROP_THREAD_REFERENCE_DEVICE_DUA_RSP,
+						&mliid,
+						status
+						))
+				.finish()
+				);
+	} else {
+		cb(kWPANTUNDStatus_InvalidArgument);
+	}
+}
+
+void
+SpinelNCPInstance::set_prop_ThreadConfigMlrResponse(const boost::any &value, CallbackWithStatus cb)
+{
+	Data packet = any_to_data(value);
+
+	if (packet.size() >= sizeof(spinel_eui64_t) + sizeof(uint8_t)) {
+		spinel_eui64_t mliid;
+		uint8_t status;
+
+		memcpy(&mliid, packet.data(), sizeof(spinel_eui64_t));
+		packet.pop_front(sizeof(spinel_eui64_t));
+		status = packet[0];
+
+		start_new_task(SpinelNCPTaskSendCommand::Factory(this)
+				.set_callback(cb)
+				.add_command(SpinelPackData(
+						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_EUI64_S SPINEL_DATATYPE_UINT8_S),
+						SPINEL_PROP_THREAD_REFERENCE_DEVICE_MLR_RSP,
 						&mliid,
 						status
 						))
