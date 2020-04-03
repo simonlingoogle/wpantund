@@ -3572,11 +3572,8 @@ SpinelNCPInstance::regsiter_all_set_handlers(void)
 		kWPANTUNDProperty_ThreadDomainPrefix,
 		boost::bind(&SpinelNCPInstance::set_prop_ThreadDomainPrefix, this, _1, _2));
 	register_set_handler(
-		kWPANTUNDProperty_ThreadConfigDuaResponse,
-		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigDuaResponse, this, _1, _2));
-	register_set_handler(
-		kWPANTUNDProperty_ThreadConfigMlrResponse,
-		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigMlrResponse, this, _1, _2));
+		kWPANTUNDProperty_ThreadConfigReferenceDevice,
+		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigReferenceDevice, this, _1, _2));
 	register_set_handler(
 		kWPANTUNDProperty_BbrSequenceNumber,
 		boost::bind(&SpinelNCPInstance::set_prop_BbrSequenceNumber, this, _1, _2));
@@ -4058,49 +4055,26 @@ SpinelNCPInstance::set_prop_ThreadDomainPrefix(const boost::any &value, Callback
 }
 
 void
-SpinelNCPInstance::set_prop_ThreadConfigDuaResponse(const boost::any &value, CallbackWithStatus cb)
-{
-	Data packet = any_to_data(value);
-
-	if (packet.size() >= sizeof(spinel_eui64_t) + sizeof(uint8_t)) {
-		spinel_eui64_t mliid;
-		uint8_t status;
-
-		memcpy(&mliid, packet.data(), sizeof(spinel_eui64_t));
-		packet.pop_front(sizeof(spinel_eui64_t));
-		status = packet[0];
-
-		start_new_task(SpinelNCPTaskSendCommand::Factory(this)
-				.set_callback(cb)
-				.add_command(SpinelPackData(
-						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_EUI64_S SPINEL_DATATYPE_UINT8_S),
-						SPINEL_PROP_THREAD_REFERENCE_DEVICE_DUA_RSP,
-						&mliid,
-						status
-						))
-				.finish()
-				);
-	} else {
-		cb(kWPANTUNDStatus_InvalidArgument);
-	}
-}
-
-void
-SpinelNCPInstance::set_prop_ThreadConfigMlrResponse(const boost::any &value, CallbackWithStatus cb)
+SpinelNCPInstance::set_prop_ThreadConfigReferenceDevice(const boost::any &value, CallbackWithStatus cb)
 {
 	Data packet = any_to_data(value);
 
 	if (packet.size() >= sizeof(uint8_t)) {
-		uint8_t status;
+		uint8_t cmd;
 
-		status = packet[0];
+		cmd = packet[0];
+		packet.pop_front(1);
+
+		syslog(LOG_INFO, "Config Reference Device: cmd=%02x payload=%d", cmd, packet.size());
 
 		start_new_task(SpinelNCPTaskSendCommand::Factory(this)
 				.set_callback(cb)
 				.add_command(SpinelPackData(
-						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_UINT8_S),
-						SPINEL_PROP_THREAD_REFERENCE_DEVICE_MLR_RSP,
-						status
+						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_UINT8_S SPINEL_DATATYPE_DATA_S),
+						SPINEL_PROP_THREAD_REFERENCE_DEVICE_CONFIG,
+						cmd, 
+						packet.data(),
+						packet.size()
 						))
 				.finish()
 				);
