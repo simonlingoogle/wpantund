@@ -2917,8 +2917,8 @@ typedef enum
      *
      * Data per item is:
      *
-     *  `C`: Mesh Local IID of the specified device.
-     *  `D`: Status value to respond with
+     *  `C`: Command
+     *  `D`: Data
      *
      */
     SPINEL_PROP_THREAD_REFERENCE_DEVICE_CONFIG = SPINEL_PROP_THREAD_EXT__BEGIN + 75,
