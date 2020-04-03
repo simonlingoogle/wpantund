@@ -331,8 +331,6 @@ private:
 	void set_prop_DatasetCommand(const boost::any &value, CallbackWithStatus cb);
 
 	void set_prop_ThreadDomainPrefix(const boost::any &value, CallbackWithStatus cb);
-	void set_prop_ThreadConfigDuaResponse(const boost::any &value, CallbackWithStatus cb);
-	void set_prop_ThreadConfigMlrResponse(const boost::any &value, CallbackWithStatus cb);
 	void set_prop_ThreadConfigReferenceDevice(const boost::any &value, CallbackWithStatus cb);
 	void set_prop_BbrSequenceNumber(const boost::any &value, CallbackWithStatus cb);
 	void set_prop_BbrReregistrationDelay(const boost::any &value, CallbackWithStatus cb);
