@@ -3572,12 +3572,6 @@ SpinelNCPInstance::regsiter_all_set_handlers(void)
 		kWPANTUNDProperty_ThreadDomainPrefix,
 		boost::bind(&SpinelNCPInstance::set_prop_ThreadDomainPrefix, this, _1, _2));
 	register_set_handler(
-		kWPANTUNDProperty_ThreadConfigDuaResponse,
-		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigDuaResponse, this, _1, _2));
-	register_set_handler(
-		kWPANTUNDProperty_ThreadConfigMlrResponse,
-		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigMlrResponse, this, _1, _2));
-	register_set_handler(
 		kWPANTUNDProperty_ThreadConfigReferenceDevice,
 		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigReferenceDevice, this, _1, _2));
 	register_set_handler(
