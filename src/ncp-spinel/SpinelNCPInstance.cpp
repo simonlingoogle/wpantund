@@ -3578,6 +3578,9 @@ SpinelNCPInstance::regsiter_all_set_handlers(void)
 		kWPANTUNDProperty_ThreadConfigMlrResponse,
 		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigMlrResponse, this, _1, _2));
 	register_set_handler(
+		kWPANTUNDProperty_ThreadConfigReferenceDevice,
+		boost::bind(&SpinelNCPInstance::set_prop_ThreadConfigReferenceDevice, this, _1, _2));
+	register_set_handler(
 		kWPANTUNDProperty_BbrSequenceNumber,
 		boost::bind(&SpinelNCPInstance::set_prop_BbrSequenceNumber, this, _1, _2));
 	register_set_handler(
@@ -4101,6 +4104,35 @@ SpinelNCPInstance::set_prop_ThreadConfigMlrResponse(const boost::any &value, Cal
 						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_UINT8_S),
 						SPINEL_PROP_THREAD_REFERENCE_DEVICE_MLR_RSP,
 						status
+						))
+				.finish()
+				);
+	} else {
+		cb(kWPANTUNDStatus_InvalidArgument);
+	}
+}
+
+void
+SpinelNCPInstance::set_prop_ThreadConfigReferenceDevice(const boost::any &value, CallbackWithStatus cb)
+{
+	Data packet = any_to_data(value);
+
+	if (packet.size() >= sizeof(uint8_t)) {
+		uint8_t cmd;
+
+		cmd = packet[0];
+		packet.pop_front(1);
+
+		syslog(LOG_INFO, "Config Reference Device: cmd=%02x payload=%d", cmd, packet.size());
+
+		start_new_task(SpinelNCPTaskSendCommand::Factory(this)
+				.set_callback(cb)
+				.add_command(SpinelPackData(
+						SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_UINT8_S SPINEL_DATATYPE_DATA_S),
+						SPINEL_PROP_THREAD_REFERENCE_DEVICE_CONFIG,
+						cmd, 
+						packet.data(),
+						packet.size()
 						))
 				.finish()
 				);
